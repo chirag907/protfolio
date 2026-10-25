@@ -32,12 +32,13 @@ function show(s){$$('main section').forEach(x=>x.hidden=x.dataset.s!==s);$$('.na
 $$('.nav [data-s]').forEach(b=>b.onclick=()=>show(b.dataset.s));
 async function sel(t,o,asc=true){let q=sb.from(t).select('*').order(o,{ascending:asc});if(TR.includes(t))q=q.is('deleted_at',null);const {data,error}=await q;return error?[]:data}
 const toBin=(t,id)=>sb.from(t).update({deleted_at:new Date().toISOString()}).eq('id',id);
-async function pinBoard(o,pub){
-  if(pub&&!confirm('This will be visible to everyone on your public Pinboard. Continue?'))return;
+async function pinTo(table,o,pub,quiet){
+  if(pub&&!quiet&&!confirm('This will be visible to everyone on your public Pinboard. Continue?'))return;
   const w={link:[260,150],note:[260,190],image:[320,240],video:[400,260],yt:[400,260],file:[260,130]}[o.kind];
-  const {error}=await sb.from('pinboard').insert({x:Math.round(60+Math.random()*420),y:Math.round(60+Math.random()*260),w:w[0],h:w[1],...o});
-  alert(error?error.message:'Pinned. Open the Pinboard tab to arrange it.');
+  const {error}=await sb.from(table).insert({x:Math.round(60+Math.random()*420),y:Math.round(60+Math.random()*260),w:w[0],h:w[1],...o});
+  if(!quiet)alert(error?error.message:'Pinned. Open the '+(pub?'Public pinboard':'Board')+' tab to arrange it.');else if(error)alert(error.message);
 }
+const pinBoard=(o,pub)=>pinTo('pinboard',o,pub);
 
 /* ---- generic add / edit forms ---- */
 function fill(sel,row){const f=$(sel);[...f.elements].forEach(el=>{if(!el.name||!(el.name in row))return;if(el.type==='checkbox')el.checked=!!row[el.name];else el.value=row[el.name]??''});f.scrollIntoView({behavior:'smooth',block:'center'})}
@@ -62,12 +63,12 @@ $('#q').oninput=()=>L.contacts();
 L.links=async()=>{
   const rows=await sel('links','created_at',false);
   $('#links').replaceChildren(...(rows.length?rows:[null]).map(l=>l?h('li',{},h('div',{className:'who'},h('a',{href:web(l.url),target:'_blank',rel:'noopener noreferrer',textContent:l.title}),h('small',{},l.url)),
-    h('div',{className:'acts'},btn('Edit',()=>fill('#f-links',l)),...(admin?[btn('Pin to board',()=>pinBoard({kind:'link',title:l.title,url:l.url},true))]:[]),btn('Bin',async()=>{await toBin('links',l.id);L.links()}))):h('li',{},empty('No links yet.'))));
+    h('div',{className:'acts'},btn('Edit',()=>fill('#f-links',l)),btn('To my board',()=>pinTo('my_board',{kind:'link',title:l.title,url:l.url})),...(admin?[btn('Pin to public board',()=>pinBoard({kind:'link',title:l.title,url:l.url},true))]:[]),btn('Bin',async()=>{await toBin('links',l.id);L.links()}))):h('li',{},empty('No links yet.'))));
 };
 L.notes=async()=>{
   const rows=await sel('notes','created_at',false);
-  $('#notes').replaceChildren(...(rows.length?rows:[null]).map(n=>n?h('div',{className:'card'},h('h4',{},n.title),h('p',{},n.body||''),h('div',{className:'acts'},btn('Edit',()=>fill('#f-notes',n)),
-    btn(n.pinned?'Unpin':'Pin',async()=>{await sb.from('notes').update({pinned:!n.pinned}).eq('id',n.id);L.notes()}),...(admin?[btn('Pin to board',()=>pinBoard({kind:'note',title:n.title,body:n.body||''},true))]:[]),btn('Bin',async()=>{await toBin('notes',n.id);L.notes()}))):empty('No notes yet.')));
+  $('#notes').replaceChildren(...(rows.length?rows:[null]).map(n=>n?h('div',{className:'card'},h('h4',{},n.title),h('p',{},n.body||''),h('div',{className:'acts'},btn('Edit',()=>fill('#f-notes',n)),btn('To my board',()=>pinTo('my_board',{kind:'note',title:n.title,body:n.body||''})),
+    btn(n.pinned?'Unpin':'Pin',async()=>{await sb.from('notes').update({pinned:!n.pinned}).eq('id',n.id);L.notes()}),...(admin?[btn('Pin to public board',()=>pinBoard({kind:'note',title:n.title,body:n.body||''},true))]:[]),btn('Bin',async()=>{await toBin('notes',n.id);L.notes()}))):empty('No notes yet.')));
 };
 
 /* ---- files (thumbnails only; details appear when opened) ---- */
@@ -93,7 +94,7 @@ async function view(f){
     btn(f.pinned?'Unpin':'Pin',async()=>{f.pinned?await sb.from('file_pins').delete().eq('path',f.path):await sb.from('file_pins').insert({path:f.path});close();show($$('main section').find(s=>!s.hidden).dataset.s)}),
     h('a',{className:'sm',href:f.url,target:'_blank',rel:'noopener',textContent:'Open'}),
     btn('Download',async()=>{const {data}=await sb.storage.from(B).createSignedUrl(f.path,60,{download:f.name});data&&(location.href=data.signedUrl)}),
-    ...(admin?[btn('Pin to board',()=>pinFile(f))]:[]),
+    btn('To my board',()=>pinTo('my_board',{kind:f.k==='img'?'image':f.k==='vid'?'video':'file',title:f.name,media:f.path})),...(admin?[btn('Pin to public board',()=>pinFile(f))]:[]),
     btn('Bin',async()=>{await sb.storage.from(B).move(f.path,uid+'/_trash/'+f.raw);await sb.from('file_pins').delete().eq('path',f.path);close();show($$('main section').find(s=>!s.hidden).dataset.s)}),
     btn('Close',close));
   $('#viewer').hidden=false;
@@ -153,31 +154,64 @@ $('#pf-form').onsubmit=async e=>{e.preventDefault();const f=pff(),o={kind:'proje
   const file=f.img.files[0];if(file){if(file.size>5e6){alert('Image must be under 5 MB.');return}const path=uid+'/'+Date.now()+'-'+file.name.replace(/[^\w.\-]+/g,'_'),{error:ue}=await sb.storage.from('portfolio').upload(path,file);if(ue){alert(ue.message);return}o.image=sb.storage.from('portfolio').getPublicUrl(path).data.publicUrl}
   const id=f.id.value,{error}=id?await sb.from('portfolio').update(o).eq('id',id):await sb.from('portfolio').insert(o);if(error){alert(error.message);return}clear($('#pf-form'));L.portfolio()};
 
-/* ---- admin: pinboard editor ---- */
-let bd,pbSel=null;const BASE={YouTube:'https://www.youtube.com',Netflix:'https://www.netflix.com','Prime Video':'https://www.primevideo.com',Spotify:'https://open.spotify.com',Instagram:'https://www.instagram.com',GitHub:'https://github.com',LinkedIn:'https://www.linkedin.com',X:'https://x.com'};
-L.pinboard=async()=>{
-  if(!bd)bd=Board.mount($('#pb'),{edit:true,onSelect:id=>{pbSel=id;const it=id&&bd.get(id);$('#pb-sel').textContent=it?'Selected: '+(it.title||it.kind):'Select an item to edit it.'},onSave:(id,p)=>sb.from('pinboard').update(p).eq('id',id)});
-  bd.set(await sel('pinboard','z'));
-};
-const pbf=(id,fn)=>$(id).onsubmit=async e=>{e.preventDefault();await fn(e.target.elements);e.target.reset();L.pinboard()};
-$('#pb-link').elements.preset.onchange=e=>{const f=$('#pb-link').elements;if(e.target.value!=='Custom'){f.title.value=e.target.value;f.url.value=BASE[e.target.value]}};
-pbf('#pb-link',f=>{if(!/^https?:\/\//i.test(f.url.value))return alert('Links must start with http:// or https://');return pinBoard({kind:'link',title:f.title.value.trim()||f.preset.value,url:f.url.value.trim()})});
-pbf('#pb-yt',f=>Board.embed(f.url.value)?pinBoard({kind:'yt',title:'Video',url:f.url.value.trim()}):alert('Please paste a YouTube video link.'));
-pbf('#pb-note',f=>pinBoard({kind:'note',title:f.title.value.trim(),body:f.body.value.trim()}));
-pbf('#pb-up',async f=>{const file=f.f.files[0];if(!file)return;if(file.size>5e7)return alert('File must be under 50 MB.');
-  const path=uid+'/'+Date.now()+'-'+file.name.replace(/[^\w.\-]+/g,'_'),{error}=await sb.storage.from(PBK).upload(path,file);if(error)return alert(error.message);
-  await pinBoard({kind:file.type.startsWith('video/')?'video':'image',title:file.name,media:sb.storage.from(PBK).getPublicUrl(path).data.publicUrl})});
-$('#pb-front').onclick=async()=>{if(!pbSel)return;const rows=await sel('pinboard','z',false);await sb.from('pinboard').update({z:((rows[0]||{}).z||0)+1}).eq('id',pbSel);L.pinboard()};
-$('#pb-del').onclick=async()=>{if(!pbSel||!confirm('Remove this item from the Pinboard?'))return;await sb.from('pinboard').delete().eq('id',pbSel);pbSel=null;L.pinboard()};
+/* ---- boards: public pinboard (owner) and private board (everyone) ---- */
+const BASE={YouTube:'https://www.youtube.com',Netflix:'https://www.netflix.com','Prime Video':'https://www.primevideo.com',Spotify:'https://open.spotify.com',Instagram:'https://www.instagram.com',GitHub:'https://github.com',LinkedIn:'https://www.linkedin.com',X:'https://x.com'},eds={};
+function editor(root,{table,pub}){
+  let bd=null,cur=null;const bucket=pub?PBK:B,say=h('span',{},'Select an item to edit it.');
+  const inp=(name,ph,type,req)=>h('input',{name,placeholder:ph,type:type||'text',required:!!req});
+  const mk=(fields,label,fn)=>{const f=h('form',{className:'form'},...fields,h('button',{className:'pri',type:'submit'},label));f.onsubmit=async e=>{e.preventDefault();await fn(f.elements);f.reset();load()};return f};
+  const preset=h('select',{name:'preset'},...['Custom',...Object.keys(BASE)].map(o=>h('option',{textContent:o})));
+  const add=o=>pinTo(table,o,pub,true);
+  const fLink=mk([preset,inp('title','Title'),inp('url','https://…','url',1)],'Add link or app',f=>{if(!/^https?:\/\//i.test(f.url.value))return alert('Links must start with http:// or https://');return add({kind:'link',title:f.title.value.trim()||f.preset.value,url:f.url.value.trim()})});
+  preset.onchange=()=>{const f=fLink.elements;if(preset.value!=='Custom'){f.title.value=preset.value;f.url.value=BASE[preset.value]}};
+  const fYt=mk([inp('url','YouTube video link','url',1)],'Add YouTube video',f=>Board.embed(f.url.value)?add({kind:'yt',title:'Video',url:f.url.value.trim()}):alert('Please paste a YouTube video link.'));
+  const fUp=mk([h('label',{className:'fl'},'Upload an image or your own video ',h('input',{type:'file',name:'f',accept:'image/*,video/*',required:true}))],'Upload and pin',async f=>{
+    const file=f.f.files[0];if(!file)return;if(file.size>5e7)return alert('File must be under 50 MB.');
+    const path=uid+(pub?'/':'/board/')+Date.now()+'-'+file.name.replace(/[^\w.\-]+/g,'_'),{error}=await sb.storage.from(bucket).upload(path,file);if(error)return alert(error.message);
+    await add({kind:file.type.startsWith('video/')?'video':'image',title:file.name,media:pub?sb.storage.from(PBK).getPublicUrl(path).data.publicUrl:path})});
+  const fNote=mk([inp('title','Note title','text',1),h('textarea',{name:'body',rows:2,placeholder:'Text'})],'Add note',f=>add({kind:'note',title:f.title.value.trim(),body:f.body.value.trim()}));
+  const box=h('div',{className:'boardbox'});
+  root.replaceChildren(fLink,fYt,fUp,fNote,h('div',{className:'bar2'},say,btn('Bring to front',async()=>{if(!cur)return;const rows=await sel(table,'z',false);await sb.from(table).update({z:((rows[0]||{}).z||0)+1}).eq('id',cur);load()}),btn('Remove',async()=>{if(!cur||!confirm('Remove this item from the board?'))return;await sb.from(table).delete().eq('id',cur);cur=null;load()})),box);
+  bd=Board.mount(box,{edit:true,onSelect:id=>{cur=id;const it=id&&bd.get(id);say.textContent=it?'Selected: '+(it.title||it.kind):'Select an item to edit it.'},onSave:(id,p)=>sb.from(table).update(p).eq('id',id)});
+  async function load(){
+    const rows=await sel(table,'z');
+    if(!pub){const ps=rows.filter(r=>r.media&&!/^https?:/i.test(r.media));if(ps.length){const {data}=await sb.storage.from(B).createSignedUrls(ps.map(r=>r.media),3600);ps.forEach((r,i)=>{r.media=data&&data[i]&&data[i].signedUrl||''})}}
+    bd.set(rows);
+  }
+  return {load};
+}
+L.pinboard=()=>(eds.pb=eds.pb||editor($('#pb-root'),{table:'pinboard',pub:true})).load();
+L.board=()=>(eds.mb=eds.mb||editor($('#mb-root'),{table:'my_board',pub:false})).load();
 
-/* ---- admin: site text ---- */
+/* ---- admin: site content (hero, showcase slots, statement, links) ---- */
 L.texts=async()=>{
-  const m=Object.fromEntries((await sel('site_text','key')).map(r=>[r.key,r.value])),T=window.SITE_TEXT||[];
-  $('#tx-form').replaceChildren(...T.map(([k,label,def])=>{const el=h(def.length>70?'textarea':'input',{name:k,value:m[k]||def});if(def.length>70)el.rows=3;return h('label',{},label,el)}),h('button',{className:'pri',type:'submit'},'Save changes'));
+  const m=Object.fromEntries((await sel('site_text','key')).map(r=>[r.key,r.value])),els=[];let last='';
+  (window.SITE_TEXT||[]).forEach(([k,label,def,g])=>{if(g!==last){els.push(h('h3',{},g));last=g}const long=def.length>70,el=h(long?'textarea':'input',{name:k,value:m[k]||def});if(long)el.rows=3;els.push(h('label',{},label,el))});
+  $('#tx-form').replaceChildren(...els,h('button',{className:'pri',type:'submit'},'Save changes'));
 };
 $('#tx-form').onsubmit=async e=>{e.preventDefault();const ups=[],dels=[];(window.SITE_TEXT||[]).forEach(([k,,def])=>{const v=e.target.elements[k].value.trim();v&&v!==def?ups.push({key:k,value:v,updated_at:new Date().toISOString()}):dels.push(k)});
   if(ups.length){const {error}=await sb.from('site_text').upsert(ups);if(error){alert(error.message);return}}
   if(dels.length)await sb.from('site_text').delete().in('key',dels);alert('Saved. Reload the homepage to see it.')};
+
+/* ---- admin: look (accent + background colours) and site music ---- */
+const PA=[['Ice','#8fb1ff'],['Ember','#ff8a5c'],['Mint','#6fe3b5'],['Violet','#b49bff'],['Rose','#ff7fa8'],['Gold','#e6c068']],PB=[['Graphite','#0e1013'],['Midnight','#0a1020'],['Forest','#0b1411'],['Plum','#130b17'],['Ink','#08090c']];
+const lum=c=>{const [r,g,b]=Theme.rgb(c);return(.299*r+.587*g+.114*b)/255};
+const prev=()=>{const f=$('#th-form').elements;Theme.apply({accent:f.accent.value,bg:f.bg.value})};
+L.look=async()=>{
+  const m=Object.fromEntries((await sel('site_text','key')).map(r=>[r.key,r.value])),f=$('#th-form').elements;
+  f.accent.value=m.theme_accent||Theme.D.accent;f.bg.value=m.theme_bg||Theme.D.bg;
+  $('#th-pre').replaceChildren(h('span',{className:'empty'},'Accent:'),...PA.map(([n,c])=>btn(n,()=>{f.accent.value=c;prev()})),h('br'),h('span',{className:'empty'},'Background:'),...PB.map(([n,c])=>btn(n,()=>{f.bg.value=c;prev()})));
+  $('#mu-now').textContent=m.music_url?'Your custom music is playing on the site.':'The default ambient music is playing on the site.';
+};
+$('#th-form').oninput=prev;
+$('#th-form').onsubmit=async e=>{e.preventDefault();const f=e.target.elements;if(lum(f.bg.value)>.35){alert('Please choose a darker background so the text stays readable.');return}
+  const {error}=await sb.from('site_text').upsert([{key:'theme_accent',value:f.accent.value},{key:'theme_bg',value:f.bg.value}]);alert(error?error.message:'Colours saved for everyone.')};
+$('#th-reset').onclick=async()=>{await sb.from('site_text').delete().in('key',['theme_accent','theme_bg']);Theme.apply({});L.look()};
+$('#mu-form').onsubmit=async e=>{e.preventDefault();const file=e.target.elements.f.files[0];if(!file)return;if(file.size>2e7){alert('Music must be under 20 MB.');return}
+  const path='music/'+Date.now()+'-'+file.name.replace(/[^\w.\-]+/g,'_'),{error}=await sb.storage.from(PBK).upload(path,file);if(error){alert(error.message);return}
+  const url=sb.storage.from(PBK).getPublicUrl(path).data.publicUrl,{error:e2}=await sb.from('site_text').upsert({key:'music_url',value:url});if(e2){alert(e2.message);return}
+  window.Sfx&&Sfx.setSource(url);e.target.reset();L.look()};
+$('#mu-reset').onclick=async()=>{await sb.from('site_text').delete().eq('key','music_url');window.Sfx&&Sfx.setSource(null);L.look()};
 
 /* ---- admin: users (no passwords exist or are shown) ---- */
 L.users=async()=>{

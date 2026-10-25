@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400..900&family=Manrope:wght@400..700&family=Pinyon+Script&display=block" rel="stylesheet">
 <link rel="stylesheet" href="workspace.css"><link rel="stylesheet" href="board.css">
+<script src="theme.js"></script>
 </head>
 <body>
 <div id="auth"><form id="auth-form">
@@ -25,8 +26,8 @@
 
 <div id="app" hidden>
 <nav class="nav" aria-label="Sections"><a class="wm logo" href="index.html" id="logo">Chirag Lakhera</a>
-<button data-s="home" class="on">Workspace</button><button data-s="contacts">Contacts</button><button data-s="files">Files</button><button data-s="links">Links</button><button data-s="notes">Notes</button><button data-s="bin">Bin</button><button data-s="settings">Settings</button>
-<button data-s="portfolio" class="adm" hidden>Portfolio</button><button data-s="pinboard" class="adm" hidden>Pinboard</button><button data-s="texts" class="adm" hidden>Site text</button><button data-s="users" class="adm" hidden>Users</button>
+<button data-s="home" class="on">Workspace</button><button data-s="contacts">Contacts</button><button data-s="files">Files</button><button data-s="links">Links</button><button data-s="notes">Notes</button><button data-s="board">Board</button><button data-s="bin">Bin</button><button data-s="settings">Settings</button>
+<button data-s="portfolio" class="adm" hidden>Portfolio</button><button data-s="pinboard" class="adm" hidden>Public pinboard</button><button data-s="texts" class="adm" hidden>Site content</button><button data-s="look" class="adm" hidden>Look &amp; sound</button><button data-s="users" class="adm" hidden>Users</button>
 <button class="snd" type="button" aria-pressed="false">Sound off</button><button id="out" class="out">Sign out</button></nav>
 <main>
 <p class="hello"><span>Workspace for</span><b id="who">Chirag Lakhera</b></p>
@@ -66,22 +67,31 @@
 <form id="pf-form" class="form"><input type="hidden" name="id"><input name="title" placeholder="Project title" required><input name="url" type="url" placeholder="Link (optional, shown as a button)"><input name="tags" placeholder="Tags, comma separated"><input name="sort_order" type="number" placeholder="Order (1 shows first)"><textarea name="summary" rows="3" placeholder="Short description"></textarea><label class="fl">Cover image <input type="file" name="img" accept="image/*"></label><label class="chk"><input type="checkbox" name="published" checked> Published</label><button class="pri" type="submit">Save project</button><button class="lnk" type="button" id="pf-clear">Clear form</button></form>
 <div id="pf-list" class="cards"></div></section>
 
-<section data-s="pinboard" hidden><h2>Pinboard</h2>
-<p class="empty">This edits the public Pinboard page. Drag by the top bar, resize from the corner, scroll to pan, Ctrl+scroll to zoom. You can also pin notes, links and files from their own tabs.</p>
-<form id="pb-link" class="form"><select name="preset"><option>Custom</option><option>YouTube</option><option>Netflix</option><option>Prime Video</option><option>Spotify</option><option>Instagram</option><option>GitHub</option><option>LinkedIn</option><option>X</option></select><input name="title" placeholder="Title"><input name="url" type="url" placeholder="https://…" required><button class="pri" type="submit">Add link or app</button></form>
-<form id="pb-yt" class="form"><input name="url" type="url" placeholder="YouTube video link" required><button class="pri" type="submit">Add YouTube video</button></form>
-<form id="pb-up" class="form"><label class="fl">Upload an image or your own video <input type="file" name="f" accept="image/*,video/*" required></label><button class="pri" type="submit">Upload and pin</button></form>
-<form id="pb-note" class="form"><input name="title" placeholder="Note title" required><textarea name="body" rows="2" placeholder="Text"></textarea><button class="pri" type="submit">Add note</button></form>
-<div class="bar2"><span id="pb-sel">Select an item to edit it.</span><button class="sm" id="pb-front" type="button">Bring to front</button><button class="sm" id="pb-del" type="button">Remove</button></div>
-<div id="pb" class="boardbox"></div></section>
+<section data-s="pinboard" hidden><h2>Public pinboard</h2>
+<p class="empty">This edits the public Pinboard page. Drag by the top bar, resize from the corner, scroll to pan, Ctrl+scroll to zoom. You can also open a note, link or file and press Pin to public board.</p>
+<div id="pb-root"></div></section>
 
-<section data-s="texts" hidden><h2>Site text</h2><p class="empty">Edit the words on your homepage. Clear a box to go back to the original text.</p><form id="tx-form" class="tx"></form></section>
+<section data-s="board" hidden><h2>Board</h2>
+<p class="empty">Your private board. Only you can see it. Pin notes, links, files, images, videos and YouTube links anywhere and arrange them. Drag by the top bar, resize from the corner.</p>
+<div id="mb-root"></div></section>
+
+<section data-s="look" hidden><h2>Look &amp; sound</h2>
+<h3>Colours</h3>
+<form id="th-form" class="form"><label class="fl">Accent colour <input type="color" name="accent" value="#8fb1ff"></label><label class="fl">Background colour <input type="color" name="bg" value="#0e1013"></label><button class="pri" type="submit">Save colours</button><button class="lnk" type="button" id="th-reset">Reset to default</button></form>
+<div id="th-pre" class="presets"></div>
+<p class="empty">Changes preview instantly. Press Save to keep them for every visitor. Pick a dark background so the text stays readable.</p>
+<h3>Site music</h3>
+<p id="mu-now" class="empty"></p>
+<form id="mu-form" class="form"><label class="fl">Upload music (mp3, wav or ogg, up to 20 MB) <input type="file" name="f" accept="audio/*" required></label><button class="pri" type="submit">Upload and use</button><button class="lnk" type="button" id="mu-reset">Use the default music</button></form>
+<p class="empty">The Music button in the header only mutes this ambient music. Sound effects stay on.</p></section>
+
+<section data-s="texts" hidden><h2>Site content</h2><p class="empty">Edit the words on your homepage, including the four showcase slots above the portfolio link. Clear a box to go back to the original text.</p><form id="tx-form" class="tx"></form></section>
 
 <section data-s="users" hidden><h2>Users</h2><p class="empty">People who created an account. You can see names, emails and dates. Passwords are never stored or visible to anyone, so none are shown here. If someone is locked out, send them a reset email.</p><ul id="us-list" class="list"></ul></section>
-</main></div>
+<footer class="gf"><span class="mark" aria-hidden="true">Chirag Lakhera</span><nav aria-label="Footer"><a href="index.html">Home</a><a href="portfolio.html">Portfolio</a><a href="pinboard.html">Pinboard</a></nav><span class="cp">© <span id="year">2026</span> Chirag Lakhera</span></footer></main></div>
 
 <div id="viewer" hidden><div class="vbox"><div id="vbody" class="vbody"></div><div class="vbar"><div><b id="vname"></b><small id="vmeta"></small></div><span id="vacts"></span></div></div></div>
-<footer class="gf"><span class="mark" aria-hidden="true">Chirag Lakhera</span><nav aria-label="Footer"><a href="index.html">Home</a><a href="portfolio.html">Portfolio</a><a href="pinboard.html">Pinboard</a></nav><span class="cp">© <span id="year">2026</span> Chirag Lakhera</span></footer>
+
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script defer src="config.js"></script><script defer src="texts.js"></script><script defer src="audio.js"></script><script defer src="board.js"></script><script defer src="workspace.js"></script>
 </body>

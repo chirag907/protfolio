@@ -118,3 +118,28 @@ as $$ select u.id, u.email::text, coalesce(u.raw_user_meta_data->>'display_name'
       from auth.users u where public.is_admin() order by u.created_at desc $$;
 revoke all on function public.admin_list_users() from public, anon;
 grant execute on function public.admin_list_users() to authenticated;
+
+-- ===== Version 4: private board for every account =====
+create table if not exists public.board_items (
+  id bigint generated always as identity primary key,
+  user_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
+  kind text not null check (kind in ('link','note','image','video','yt','file','contact')),
+  title text, body text, url text, media text,
+  x numeric not null default 0, y numeric not null default 0, w numeric not null default 260, h numeric not null default 180, z int not null default 0,
+  created_at timestamptz not null default now());
+alter table public.board_items enable row level security;
+drop policy if exists "owner manages board items" on public.board_items;
+create policy "owner manages board items" on public.board_items for all to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
+
+
+-- ===== Version 4: private board for every account (safe to run again) =====
+create table if not exists public.my_board (
+  id bigint generated always as identity primary key,
+  user_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
+  kind text not null check (kind in ('link','note','image','video','yt','file')),
+  title text, body text, url text, media text,
+  x numeric not null default 0, y numeric not null default 0, w numeric not null default 260, h numeric not null default 180, z int not null default 0,
+  created_at timestamptz not null default now());
+alter table public.my_board enable row level security;
+drop policy if exists "owner manages board" on public.my_board;
+create policy "owner manages board" on public.my_board for all to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());

@@ -7,3 +7,5 @@ Plain HTML/CSS/JS, no build step. Follow `DEPLOY.md` for GitHub + Netlify + Supa
 - `workspace.html`: contacts, files (with Pin and Bin), links, notes, settings; owner tabs: Portfolio, Pinboard, Site text, Users.
 - `logo-maker.html`: open once in a browser to download your logo and app icons.
 - `supabase.sql`: run once in Supabase. `config.js`: your Supabase URL and anon key.
+
+`theme.js` applies the accent/background colours chosen in the Workspace on every page. `audio.js` plays the music and sound effects. `board.js` is the shared pinboard canvas.

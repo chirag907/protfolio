@@ -18,7 +18,7 @@ You need free accounts at github.com, netlify.com and supabase.com.
 
 ## Part 4. Supabase
 1. supabase.com -> **New project**. Save the database password, wait about 2 minutes.
-2. **SQL Editor -> New query**, paste the whole of `supabase.sql`, click **Run**. It is safe to run again later.
+2. **SQL Editor -> New query**, paste the whole of `supabase.sql`, click **Run**. It is safe to run again later, and you must run it again whenever you replace `supabase.sql` with a newer one (this version adds the private Board table).
 3. **Authentication -> Sign In / Providers -> Email**: Email on, **Allow new users to sign up** ON, **Confirm email** ON.
 4. **Authentication -> URL Configuration**: **Site URL** = your Netlify address. Add `https://YOURSITE.netlify.app/**` to **Redirect URLs**.
 5. **Project Settings -> API Keys**: copy the **Project URL**; on **Legacy API keys** copy the **anon** key (starts `eyJ`). Never the `service_role` key.
@@ -66,3 +66,11 @@ Edit files on GitHub (pencil icon) or upload new versions; Netlify redeploys in 
 - **No admin tabs:** the account must exist first; run the owner line again, then sign out and in.
 - **Pin to board / upload fails:** run the latest `supabase.sql` (it creates the public `pinboard` storage bucket).
 - **Changes not showing:** wait for Netlify **Published**, then hard refresh.
+
+## What is new in this version (all edited from your Workspace, no code changes)
+- **Site content tab** (owner only): the four showcase slots above "See the portfolio", the hero line, tunnel phrases, statement, email and social links.
+- **Look & sound tab** (owner only): accent colour and background colour for the whole site (changes preview live, press Save to keep them for everyone), plus uploading your own site music or going back to the default.
+- **Music button** in the header mutes only the ambient music. Click sounds, hover ticks and glass chimes always stay on. Browsers need one click, tap or key press before any sound can play.
+- **Board tab** (every account): a private canvas only that person can see. Use "To my board" on notes, links and files, or add links, YouTube videos, images and videos directly.
+- **Public pinboard tab** (owner only): the same editor for the public Pinboard page.
+- The workspace now fits one screen: the menu and the content scroll separately.

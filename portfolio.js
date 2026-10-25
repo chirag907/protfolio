@@ -15,7 +15,7 @@ function open(p){
 const close=()=>{$('#pv').hidden=true;document.body.style.overflow=''};
 $('#pv-x').onclick=close;$('#pv').addEventListener('click',e=>{if(e.target.id==='pv')close()});addEventListener('keydown',e=>{if(e.key==='Escape')close()});
 if(!cfg.SUPABASE_URL||!cfg.SUPABASE_ANON_KEY||!window.supabase){say('Portfolio coming soon.');return}
-const sb=supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
+const sb=supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);window.Theme&&Theme.load(sb);
 const {data,error}=await sb.from('portfolio').select('*').eq('published',true).order('sort_order');
 if(error||!data||!data.length){say('Portfolio coming soon.');return}
 const prof=data.find(r=>r.kind==='profile');

@@ -12,13 +12,14 @@
 <link rel="stylesheet" href="style.css">
 <script>document.documentElement.className='js'</script>
 <noscript><style>#loader{display:none}</style></noscript>
+<script src="theme.js"></script>
 </head>
 <body data-snd="on">
 <div id="loader" role="status" aria-label="Loading">
-<i class="ld-orb"></i>
-<div class="ld-mid"><p class="ld-name" aria-label="Chirag Lakhera"><span>Chirag</span><span>Lakhera</span></p><div class="ld-line"><i></i></div></div>
-<p class="ld-cap">Portfolio &amp; Workspace</p>
-<p class="ld-pct"><span id="count">00</span><small>%</small></p>
+<canvas id="ldc" aria-hidden="true"></canvas>
+<i class="ld-bar t"></i><i class="ld-bar b"></i>
+<div class="ld-mid"><p class="ld-pre">A portfolio by</p><p class="ld-name" aria-label="Chirag Lakhera"><span>Chirag</span><span>Lakhera</span></p><p class="ld-sub">Developer. Builder.</p></div>
+<div class="ld-foot"><i class="ld-line"><b></b></i><p class="ld-pct"><span id="count">000</span><small>%</small></p></div>
 </div>
 <canvas id="scene" aria-hidden="true"></canvas>
 <header class="top"><a class="wm" href="index.html">Chirag Lakhera</a>
@@ -30,7 +31,9 @@
 <p id="chap" class="chap"></p>
 <p class="count"><b id="idx">00</b>%</p>
 <p class="hint" data-k="hint">Move the mouse. Scroll to fly through.</p></div></section>
-<section id="work" class="block"><h2 data-k="work_h">Selected work</h2><a class="big" href="portfolio.html" data-k="work_link">See the portfolio →</a><p class="sub" data-k="work_sub">Projects, case studies and links, kept up to date.</p></section>
+<section id="work" class="block"><h2 data-k="work_h">Selected work</h2>
+<ul class="projects"><li><a href="#" data-kh="s1_url"><span class="t" data-k="s1_title">Project one</span><span class="d" data-k="s1_desc">What it does and who it is for.</span><span class="s" data-k="s1_tag">JavaScript</span></a></li><li><a href="#" data-kh="s2_url"><span class="t" data-k="s2_title">Project two</span><span class="d" data-k="s2_desc">The problem you solved and the result.</span><span class="s" data-k="s2_tag">Python</span></a></li><li><a href="#" data-kh="s3_url"><span class="t" data-k="s3_title">Project three</span><span class="d" data-k="s3_desc">Link the live site or the repo.</span><span class="s" data-k="s3_tag">React</span></a></li><li><a href="#" data-kh="s4_url"><span class="t" data-k="s4_title">Project four</span><span class="d" data-k="s4_desc">Add whatever you want to show first.</span><span class="s" data-k="s4_tag">Design</span></a></li></ul>
+<a class="big more" href="portfolio.html" data-k="work_link">See the portfolio →</a></section>
 <section id="about" class="block statement"><p data-k="about">I’m Chirag Lakhera. I turn rough ideas into fast, clear, working products, and I keep everything that matters in one place I can reach from anywhere.</p></section>
 <section class="block cta"><a class="big" href="workspace.html" target="_blank" rel="noopener" data-k="cta_link">My private workspace ↗</a><p class="sub" data-k="cta_sub">Contacts, files, links and notes, on any device. Sign in or create your own.</p></section>
 <section id="contact" class="block"><a class="big" data-k="email" href="mailto:chiraglakhera3@gmail.com">chiraglakhera3@gmail.com</a>

@@ -7,7 +7,8 @@ const COL={YouTube:'#ff0033',Netflix:'#e50914','Prime Video':'#00a8e1',Spotify:'
 const btn=(u,t)=>h('a',{className:'bt',href:web(u),target:'_blank',rel:'noopener noreferrer',textContent:t||'Open'});
 function content(it){
   switch(it.kind){
-    case 'link':return [h('i',{className:'dot',style:'background:'+(COL[it.title]||'#8fb1ff')}),h('b',{},it.title||host(it.url)),h('small',{},host(it.url)),btn(it.url)];
+    case 'link':return [h('i',{className:'dot',style:'background:'+(COL[it.title]||'var(--hot)')}),h('b',{},it.title||host(it.url)),h('small',{},host(it.url)),btn(it.url)];
+    case 'contact':return [h('b',{},it.title||'Contact'),h('small',{},it.body||''),...(it.url?[h('a',{className:'bt',href:'tel:'+it.url.replace(/[^\d+*#]/g,''),textContent:'Call'})]:[])];
     case 'note':return [h('b',{},it.title||''),h('p',{},it.body||'')];
     case 'image':return [h('img',{src:web(it.media),alt:it.title||'',loading:'lazy'})];
     case 'video':return [h('video',{src:web(it.media),controls:true,preload:'metadata'})];
