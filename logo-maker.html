@@ -1,0 +1,18 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Logo maker</title>
+<link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&display=block" rel="stylesheet">
+<style>body{margin:0;padding:2rem;background:#0e1013;color:#e9edf2;font:16px/1.5 system-ui,sans-serif}canvas{max-width:320px;border:1px solid #333;background:repeating-conic-gradient(#1a1d22 0 25%,#12151a 0 50%) 0 0/20px 20px}button{margin:.3rem .3rem 0 0;padding:.6rem 1rem;border-radius:999px;border:1px solid #556;background:#8fb1ff;color:#0e1013;font-weight:700;cursor:pointer}p{max-width:36rem;color:#9aa3b5}</style></head><body>
+<h1>Chirag Lakhera logo</h1><p>This page draws your two-line script logo and saves it as image files. Click each button; the files download. Then upload <b>icon-512.png, icon-192.png, apple-touch-icon.png and favicon-32.png</b> to the root of your GitHub repo (replace the existing ones). <b>logo.png</b> is your transparent logo for anything else.</p>
+<canvas id="p" width="640" height="640"></canvas><div id="b"></div>
+<script>
+const jobs=[['logo.png',1200,false],['icon-512.png',512,true],['icon-192.png',192,true],['apple-touch-icon.png',180,'solid'],['favicon-32.png',32,true]];
+function draw(size,bg){const c=document.createElement('canvas');c.width=c.height=size;const x=c.getContext('2d');
+ if(bg){x.fillStyle='#0e1013';x.beginPath();x.roundRect?x.roundRect(0,0,size,size,bg==='solid'?0:size*.22):x.rect(0,0,size,size);x.fill()}
+ const g=x.createLinearGradient(0,size*.2,0,size*.85);g.addColorStop(0,'#ffffff');g.addColorStop(1,'#8e9db5');x.fillStyle=g;x.strokeStyle=g;x.textAlign='center';x.textBaseline='alphabetic';
+ let s=size*(size<=64?.34:.3);x.font=s+'px "Pinyon Script",cursive';
+ x.lineWidth=Math.max(size<=64?1.4:size*.004,.8);
+ const l=(t,cx,cy)=>{x.fillText(t,size*cx,size*cy);x.strokeText(t,size*cx,size*cy)};
+ l('Chirag',.44,.46);l('Lakhera',.58,.74);return c}
+function mk(){const pc=document.getElementById('p');pc.getContext('2d').clearRect(0,0,640,640);pc.getContext('2d').drawImage(draw(640,true),0,0);
+ const b=document.getElementById('b');b.innerHTML='';jobs.forEach(([n,s,bg])=>{const e=document.createElement('button');e.textContent='Download '+n;e.onclick=()=>draw(s,bg).toBlob(bl=>{const a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download=n;a.click()});b.append(e)})}
+document.fonts.load('400 100px "Pinyon Script"').then(()=>document.fonts.ready).then(mk);
+</script></body></html>

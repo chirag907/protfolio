@@ -4,39 +4,42 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Chirag Lakhera</title>
-<meta name="description" content="Chirag Lakhera: developer. Work, and a private workspace for everything that matters.">
+<meta name="description" content="Chirag Lakhera: developer. Portfolio, pinboard and a private workspace.">
 <meta name="theme-color" content="#0e1013">
-<link rel="icon" href="icon.svg">
+<link rel="icon" type="image/png" href="favicon-32.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400..900&family=Manrope:wght@400..700&family=Pinyon+Script&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400..900&family=Manrope:wght@400..700&family=Pinyon+Script&display=block" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <script>document.documentElement.className='js'</script>
 <noscript><style>#loader{display:none}</style></noscript>
 </head>
-<body>
-<div id="loader" aria-hidden="true"><span id="count">0</span></div>
+<body data-snd="on">
+<div id="loader" role="status" aria-label="Loading">
+<i class="ld-orb"></i>
+<div class="ld-mid"><p class="ld-name" aria-label="Chirag Lakhera"><span>Chirag</span><span>Lakhera</span></p><div class="ld-line"><i></i></div></div>
+<p class="ld-cap">Portfolio &amp; Workspace</p>
+<p class="ld-pct"><span id="count">00</span><small>%</small></p>
+</div>
 <canvas id="scene" aria-hidden="true"></canvas>
-<header class="top"><a class="wm" href="#top">Chirag Lakhera</a>
-<nav aria-label="Main"><a href="portfolio.html">Portfolio</a><a href="#about">About</a><a href="workspace.html" target="_blank" rel="noopener">Workspace</a><a href="#contact">Contact</a></nav></header>
+<header class="top"><a class="wm" href="index.html">Chirag Lakhera</a>
+<nav aria-label="Main"><a href="portfolio.html">Portfolio</a><a href="pinboard.html">Pinboard</a><a href="workspace.html" target="_blank" rel="noopener">Workspace</a><a href="index.html#contact">Contact</a><button class="snd" type="button" aria-pressed="false">Sound off</button></nav></header>
+<div class="namewrap"><div class="name-inner"><h1 class="name" aria-label="Chirag Lakhera"><span>Chirag</span><span>Lakhera</span></h1><i class="orn" aria-hidden="true"></i><p class="tag" data-k="tag">Developer. Builder of small, beautiful things.</p></div></div>
 <main id="top">
-<section class="hero">
-<h1 class="name" aria-label="Chirag Lakhera"><span class="n1">Chirag</span><span class="n2">Lakhera</span></h1>
-<p class="tag">Developer. Builder of small, beautiful things.</p>
-<p class="scroll">Scroll to enter</p>
-</section>
-<section id="journey" class="journey" aria-label="Interactive 3D gallery"><div class="pin">
+<section class="hero"><p class="scroll" data-k="scroll">Scroll</p></section>
+<section id="journey" class="journey" aria-label="Interactive 3D tunnel"><div class="pin">
 <p id="chap" class="chap"></p>
 <p class="count"><b id="idx">00</b>%</p>
-<p class="hint">Move the mouse. Scroll to fly through.</p></div></section>
-<section id="work" class="block"><h2>Selected work</h2><a class="big" href="portfolio.html">See the portfolio →</a><p class="sub">Projects, case studies and links, kept up to date.</p></section>
-<section id="about" class="block statement"><p>I’m Chirag Lakhera. I turn rough ideas into fast, clear, working products, and I keep everything that matters in one place I can reach from anywhere.</p></section>
-<section class="block cta"><a class="big" href="workspace.html" target="_blank" rel="noopener">My private workspace ↗</a>
-<p>Contacts, files, links and notes, on any device. Sign in or create your own.</p></section>
-<section id="contact" class="block"><a class="big" href="mailto:chiraglakhera3@gmail.com">chiraglakhera3@gmail.com</a>
-<p class="socials"><a href="https://github.com/your-username">GitHub</a><a href="https://www.linkedin.com/in/chirag_lakhera33">LinkedIn</a><a href="https://instagram.com/chirag_lakhera333">Instagram</a></p></section>
+<p class="hint" data-k="hint">Move the mouse. Scroll to fly through.</p></div></section>
+<section id="work" class="block"><h2 data-k="work_h">Selected work</h2><a class="big" href="portfolio.html" data-k="work_link">See the portfolio →</a><p class="sub" data-k="work_sub">Projects, case studies and links, kept up to date.</p></section>
+<section id="about" class="block statement"><p data-k="about">I’m Chirag Lakhera. I turn rough ideas into fast, clear, working products, and I keep everything that matters in one place I can reach from anywhere.</p></section>
+<section class="block cta"><a class="big" href="workspace.html" target="_blank" rel="noopener" data-k="cta_link">My private workspace ↗</a><p class="sub" data-k="cta_sub">Contacts, files, links and notes, on any device. Sign in or create your own.</p></section>
+<section id="contact" class="block"><a class="big" data-k="email" href="mailto:chiraglakhera3@gmail.com">chiraglakhera3@gmail.com</a>
+<p class="socials"><a data-kh="github" href="https://github.com/your-username">GitHub</a><a data-kh="linkedin" href="https://www.linkedin.com/in/your-username">LinkedIn</a><a data-kh="x" href="https://x.com/your-username">X</a><a data-kh="instagram" href="https://instagram.com/your-username">Instagram</a><a href="pinboard.html">Pinboard</a></p></section>
 </main>
-<footer><p class="mark" aria-hidden="true">Chirag Lakhera</p><p>© <span id="year">2026</span> Chirag Lakhera</p></footer>
+<footer class="gf"><span class="mark" aria-hidden="true">Chirag Lakhera</span><nav aria-label="Footer"><a href="portfolio.html">Portfolio</a><a href="pinboard.html">Pinboard</a><a href="workspace.html" target="_blank" rel="noopener">Workspace</a></nav><span class="cp">© <span id="year">2026</span> Chirag Lakhera</span></footer>
 <script defer src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js"></script>
-<script defer src="site.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script defer src="config.js"></script>
+<script defer src="texts.js"></script><script defer src="audio.js"></script><script defer src="site.js"></script>
 </body>
 </html>

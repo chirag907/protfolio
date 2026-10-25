@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pinboard – Chirag Lakhera</title>
+<meta name="description" content="A public pinboard of links, profiles and videos.">
+<meta name="theme-color" content="#0e1013">
+<link rel="icon" type="image/png" href="favicon-32.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400..900&family=Manrope:wght@400..700&family=Pinyon+Script&display=block" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="board.css">
+</head>
+<body class="plain boardpage">
+<header class="top"><a class="wm" href="index.html">Chirag Lakhera</a>
+<nav aria-label="Main"><a href="portfolio.html">Portfolio</a><a href="pinboard.html">Pinboard</a><a href="workspace.html" target="_blank" rel="noopener">Workspace</a><a href="index.html#contact">Contact</a><button class="snd" type="button" aria-pressed="false">Sound off</button></nav></header>
+<div id="board"></div>
+<p class="bhint" id="bhint">Drag to move around. Ctrl + scroll to zoom.</p>
+<div id="pv" hidden><div class="pv-box"><button class="pv-x" id="pv-x" type="button">Close</button><img id="pv-img" alt=""></div></div>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script defer src="config.js"></script>
+<script defer src="board.js"></script><script defer src="audio.js"></script><script defer src="pinboard.js"></script>
+</body>
+</html>
