@@ -1,8 +1,9 @@
 # Chirag Lakhera: site + workspace
 
-Plain HTML/CSS/JS, no build step. Follow `DEPLOY.md` for the full GitHub + Netlify + Supabase steps.
+Plain HTML/CSS/JS, no build step. Follow `DEPLOY.md` for GitHub + Netlify + Supabase.
 
-- `index.html`: homepage (smoky background, script name, glass and chrome 3D tunnel).
-- `portfolio.html`: public portfolio, edited only from the workspace by the owner account.
-- `workspace.html`: contacts, files, links, notes, emergency card; sign-up open, each account private.
+- `index.html`: homepage (loading screen, script name, 3D tunnel of frosted glass and chrome).
+- `portfolio.html`: public portfolio; `pinboard.html`: public pinboard canvas. Both are edited from the Workspace by the owner only.
+- `workspace.html`: contacts, files (with Pin and Bin), links, notes, settings; owner tabs: Portfolio, Pinboard, Site text, Users.
+- `logo-maker.html`: open once in a browser to download your logo and app icons.
 - `supabase.sql`: run once in Supabase. `config.js`: your Supabase URL and anon key.

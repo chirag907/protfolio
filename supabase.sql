@@ -64,3 +64,57 @@ create policy "admin deletes portfolio images" on storage.objects for delete to 
 -- Make YOUR account the owner. Create/sign in to your account on the site first, then run this line
 -- (it is safe to run again; it does nothing if the account does not exist yet):
 insert into public.site_admins (user_id) select id from auth.users where email = 'chiraglakhera3@gmail.com' on conflict do nothing;
+
+-- ===== Version 3 additions (safe to run again) =====
+alter table public.contacts add column if not exists deleted_at timestamptz;
+alter table public.links add column if not exists deleted_at timestamptz;
+alter table public.notes add column if not exists deleted_at timestamptz;
+
+create table if not exists public.file_pins (
+  user_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
+  path text not null, primary key (user_id, path));
+alter table public.file_pins enable row level security;
+drop policy if exists "owner manages file pins" on public.file_pins;
+create policy "owner manages file pins" on public.file_pins for all to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
+
+-- let each person move their own files into / out of their recycle bin folder
+drop policy if exists "owner moves files" on storage.objects;
+create policy "owner moves files" on storage.objects for update to authenticated
+  using (bucket_id = 'files' and (storage.foldername(name))[1] = auth.uid()::text)
+  with check (bucket_id = 'files' and (storage.foldername(name))[1] = auth.uid()::text);
+
+-- editable website text (public read, owner write)
+create table if not exists public.site_text (key text primary key, value text not null default '', updated_at timestamptz not null default now());
+alter table public.site_text enable row level security;
+drop policy if exists "public reads site text" on public.site_text;
+create policy "public reads site text" on public.site_text for select to anon, authenticated using (true);
+drop policy if exists "admin edits site text" on public.site_text;
+create policy "admin edits site text" on public.site_text for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+-- public pinboard (public read, owner write)
+create table if not exists public.pinboard (
+  id bigint generated always as identity primary key,
+  kind text not null check (kind in ('link','note','image','video','yt','file')),
+  title text, body text, url text, media text,
+  x numeric not null default 0, y numeric not null default 0, w numeric not null default 260, h numeric not null default 180, z int not null default 0,
+  created_at timestamptz not null default now());
+alter table public.pinboard enable row level security;
+drop policy if exists "public reads pinboard" on public.pinboard;
+create policy "public reads pinboard" on public.pinboard for select to anon, authenticated using (true);
+drop policy if exists "admin edits pinboard" on public.pinboard;
+create policy "admin edits pinboard" on public.pinboard for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+insert into storage.buckets (id, name, public) values ('pinboard', 'pinboard', true) on conflict (id) do nothing;
+drop policy if exists "admin adds pinboard media" on storage.objects;
+create policy "admin adds pinboard media" on storage.objects for insert to authenticated with check (bucket_id = 'pinboard' and public.is_admin());
+drop policy if exists "admin removes pinboard media" on storage.objects;
+create policy "admin removes pinboard media" on storage.objects for delete to authenticated using (bucket_id = 'pinboard' and public.is_admin());
+
+-- owner-only user list: names, emails and dates. Passwords are never stored or shown by this site.
+create or replace function public.admin_list_users()
+returns table (id uuid, email text, name text, created_at timestamptz, last_sign_in_at timestamptz)
+language sql stable security definer set search_path = public, auth
+as $$ select u.id, u.email::text, coalesce(u.raw_user_meta_data->>'display_name','')::text, u.created_at, u.last_sign_in_at
+      from auth.users u where public.is_admin() order by u.created_at desc $$;
+revoke all on function public.admin_list_users() from public, anon;
+grant execute on function public.admin_list_users() to authenticated;
