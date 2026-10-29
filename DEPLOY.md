@@ -1,64 +1,88 @@
-# Deploy guide: GitHub + Netlify + Supabase (about 40 minutes)
+# Deploy guide: GitHub + Netlify + Supabase (about 45 minutes)
 
 You need free accounts at github.com, netlify.com and supabase.com.
 
 ## Part 1. Prepare the files
-1. Unzip `portfolio.zip`. You get a folder `portfolio` containing `index.html`, `portfolio.html`, `workspace.html`, `style.css`, `workspace.css`, `site.js`, `portfolio.js`, `workspace.js`, `config.js`, `supabase.sql`, `icon.svg`, `manifest.webmanifest`.
-2. Open `index.html` in a text editor. Near the bottom, replace `your-username` in the GitHub, LinkedIn, X and Instagram links with your own handles (delete a link if you don't use it).
+1. Unzip `portfolio.zip`. Everything inside the `portfolio` folder goes to GitHub (you will not edit the social links in code any more; you will edit them from your Workspace, see Part 7).
+2. Make your logo images (once): open `logo-maker.html` in Chrome (double-click it, or use your Netlify address + `/logo-maker.html` after deploying). Click each **Download** button. Replace the files `icon-512.png`, `icon-192.png`, `apple-touch-icon.png`, `favicon-32.png` in the folder with the downloaded ones. `logo.png` is your transparent logo file for any other use.
 
 ## Part 2. GitHub
 1. github.com -> **+** -> **New repository**. Name it `portfolio`. Do not tick "Add a README". Create it.
-2. Click **uploading an existing file**. Open the unzipped folder, select ALL the files inside it (not the folder itself) and drag them into the page. `index.html` must be at the top level of the repo.
-3. Click **Commit changes**.
-4. Using an older repo? Delete its old files first (open a file -> trash icon), especially `app.js`, the `images` folder and any old `style.css`. A fresh repo is easier.
+2. Click **uploading an existing file**. Select ALL files inside the unzipped folder (not the folder itself) and drag them in. `index.html` must be at the top level. Click **Commit changes**.
+3. Using an older repo? Delete its old files first (especially `app.js`, `icon.svg` and the `images` folder). A fresh repo is easier.
 
 ## Part 3. Netlify
-1. app.netlify.com -> **Add new site** -> **Import an existing project** -> **GitHub**, authorise, pick the repo.
-2. Leave **Build command** empty and set **Publish directory** to `.` (or leave it blank). Click **Deploy**.
-3. After about a minute you get `https://something.netlify.app`. Open it: the loader and the 3D hero should appear.
-4. **Site configuration -> Change site name**, e.g. `chiraglakhera`. Your URL is now `https://chiraglakhera.netlify.app`. Note it.
+1. app.netlify.com -> **Add new site** -> **Import an existing project** -> **GitHub**, authorise, choose the repo.
+2. Leave **Build command** empty and set **Publish directory** to `.` (or blank). Click **Deploy**.
+3. **Site configuration -> Change site name**, e.g. `chiraglakhera`. Your address is `https://chiraglakhera.netlify.app`. Note it.
 
 ## Part 4. Supabase
-1. supabase.com -> **New project**. Choose a name, save the database password, pick the nearest region, wait about 2 minutes.
-2. **SQL Editor -> New query**. Paste the whole of `supabase.sql` and click **Run**. "Success" is the expected result. (The last line, which makes you the owner, does nothing yet because your account doesn't exist.)
-3. **Authentication -> Sign In / Providers -> Email**: Email enabled, **Allow new users to sign up** ON, **Confirm email** ON.
-4. **Authentication -> URL Configuration**: set **Site URL** to your Netlify URL. Under **Redirect URLs** add `https://YOURSITE.netlify.app/**`.
-5. **Project Settings -> API Keys**: copy the **Project URL**. Open the **Legacy API keys** tab and copy the **anon** key (a long string starting `eyJ`). Never use the `service_role` key.
+1. supabase.com -> **New project**. Save the database password, wait about 2 minutes.
+2. **SQL Editor -> New query**, paste the whole of `supabase.sql`, click **Run**. It is safe to run again later, and you must run it again whenever you replace `supabase.sql` with a newer one (this version adds the private Board table).
+3. **Authentication -> Sign In / Providers -> Email**: Email on, **Allow new users to sign up** ON, **Confirm email** ON.
+4. **Authentication -> URL Configuration**: **Site URL** = your Netlify address. Add `https://YOURSITE.netlify.app/**` to **Redirect URLs**.
+5. **Project Settings -> API Keys**: copy the **Project URL**; on **Legacy API keys** copy the **anon** key (starts `eyJ`). Never the `service_role` key.
 
-## Part 5. Connect the site to Supabase
-1. In your GitHub repo open `config.js`, click the pencil icon, paste the URL and the anon key between the quotes, and **Commit changes**.
-2. Netlify redeploys automatically. Wait until **Deploys** shows **Published**.
+## Part 5. Connect the site
+1. GitHub -> `config.js` -> pencil icon -> paste the URL and anon key between the quotes -> **Commit changes**.
+2. Wait for Netlify **Deploys** to show **Published**.
 
-## Part 6. Create your owner account
-1. Open `https://YOURSITE.netlify.app/workspace.html`, choose **Create an account**, use `chiraglakhera3@gmail.com` and a strong, unique password of 10+ characters.
-2. Open the confirmation email and click the link (check spam). Supabase's built-in email sends only a few messages per hour. If nothing arrives, wait, or set up your own SMTP under **Authentication -> SMTP**.
-3. Back in the Supabase **SQL Editor** run only this line:
+## Part 6. Make yourself the owner
+1. Open `https://YOURSITE.netlify.app/workspace.html` -> **Create an account** with `chiraglakhera3@gmail.com` and a strong unique password (10+ characters, never `12345678`).
+2. Click the link in the confirmation email (check spam). Supabase's built-in email only sends a few per hour; wait, or add your own SMTP under **Authentication -> SMTP**.
+3. In the Supabase **SQL Editor** run only this line:
    `insert into public.site_admins (user_id) select id from auth.users where email = 'chiraglakhera3@gmail.com' on conflict do nothing;`
-   Check **Table Editor -> site_admins** shows one row.
-4. Sign out of the workspace and sign in again. A **Portfolio** tab now appears.
+4. Sign out and in again in the workspace. Four extra tabs appear for you only: **Portfolio, Pinboard, Site text, Users**.
 
-## Part 7. Fill in the portfolio
-Workspace -> **Portfolio**: save a headline and bio, then add projects (title, link, tags, short description, cover image). Open `/portfolio.html` in a private window to see what visitors see.
+## Part 7. Fill in the site (all from the Workspace, no code)
+- **Site text**: change the hero line, tunnel phrases, "I'm Chirag Lakhera..." statement, your email, and your GitHub / LinkedIn / X / Instagram links.
+- **Portfolio**: headline, bio, and projects with a cover image and an optional link. Visitors see large sharp-cornered images; clicking one opens it full size, with a **Visit project** button when there is a link.
+- **Pinboard**: add links and apps (YouTube, Netflix, Instagram...), a YouTube video, your own uploaded video or image, notes. Drag by the top bar, resize from the corner. You can also open any note, link or file in the workspace and press **Pin to board**. Everything on the Pinboard is PUBLIC.
 
-## Part 8. Test everything
-- Homepage: loader, script name, scroll through the glass and chrome tunnel, dark glass footer.
-- `/portfolio.html` in a private window shows your content.
-- Workspace: add a contact (mark it Emergency), a pinned note, a link, upload a file and open its preview. The Emergency tab should show the contact and note.
-- On your phone: open the workspace URL, browser menu -> **Add to Home Screen**.
-- Create a second test account in a private window. It must NOT show a Portfolio tab and must not see your data.
+## Part 8. Test
+- Homepage: loading screen (the site opens on its own; sound starts after your first click or key press), scroll the tunnel, hover the frosted glass objects.
+- `/portfolio.html` and `/pinboard.html` in a private window show your content.
+- Workspace: add a contact (mark Emergency), a pinned note, a link, upload a file (tiles show thumbnails only; open one to see its name and details, pin it, bin it). Check **Bin** restores and deletes forever. Edit a note.
+- Settings: enter another name; the top of the workspace reads "Workspace for ...". Leave it empty to get the default back.
+- Create a second test account in a private window: it must not show the admin tabs and must not see your data.
+- Phone: open the workspace address, browser menu -> **Add to Home Screen**.
 
 ## Part 9. Finish
-- On chirag.code.blog add a link to your Netlify URL (free WordPress can't redirect).
-- Optional: custom domain (Netlify -> Domain management), multi-factor authentication on your Supabase and GitHub accounts, and turn sign-ups off in Supabase if you don't want other accounts.
+- Add a link to your Netlify address on chirag.code.blog (free WordPress can't redirect).
+- Optional: custom domain (Netlify -> Domain management), multi-factor authentication on Supabase and GitHub, turn sign-ups off in Supabase if you don't want other accounts.
+
+## Passwords
+This site never stores or shows anyone's password, including yours. Supabase keeps only a one-way scrambled version. The Users tab shows names, emails and dates, and can send a reset email. Don't ask people to send you passwords, and don't store passwords, bank details or ID numbers in the workspace.
 
 ## Updating later
-Edit any file on GitHub (pencil icon) or upload new versions; Netlify redeploys in about a minute. Portfolio, contacts, notes, links and files are edited inside the workspace and need no redeploy.
+Edit files on GitHub (pencil icon) or upload new versions; Netlify redeploys in about a minute. Workspace content, portfolio, pinboard and site text are edited in the Workspace and need no redeploy.
 
 ## Troubleshooting
-- **No 3D / plain page:** turn on hardware acceleration in the browser, or try Chrome. The site falls back to a simple layout when WebGL is unavailable.
+- **No 3D / plain page:** turn on hardware acceleration, or try Chrome. The site falls back to a simple page without WebGL.
+- **No sound:** browsers only allow audio after a click, tap or key press. Click anywhere once, or press the Sound button in the header.
 - **"Not connected yet":** `config.js` is empty or not deployed. Hard refresh (Ctrl+Shift+R).
 - **"Invalid API key":** use the legacy `anon` key (starts `eyJ`).
-- **"Failed to fetch":** wrong Project URL, or the free Supabase project is paused (open the dashboard to restore it).
-- **No Portfolio tab:** the account must exist first; run the owner line again, then sign out and in.
+- **"Failed to fetch":** wrong Project URL, or the free project is paused (open the dashboard to restore it).
+- **No admin tabs:** the account must exist first; run the owner line again, then sign out and in.
+- **Pin to board / upload fails:** run the latest `supabase.sql` (it creates the public `pinboard` storage bucket).
 - **Changes not showing:** wait for Netlify **Published**, then hard refresh.
-- Don't store passwords, bank details or ID numbers in the workspace.
+
+## What is new in this version (all edited from your Workspace, no code changes)
+- **Site content tab** (owner only): the four showcase slots above "See the portfolio", the hero line, tunnel phrases, statement, email and social links.
+- **Look & sound tab** (owner only): accent colour and background colour for the whole site (changes preview live, press Save to keep them for everyone), plus uploading your own site music or going back to the default.
+- **Music button** in the header mutes only the ambient music. Click sounds, hover ticks and glass chimes always stay on. Browsers need one click, tap or key press before any sound can play.
+- **Board tab** (every account): a private canvas only that person can see. Use "To my board" on notes, links and files, or add links, YouTube videos, images and videos directly.
+- **Public pinboard tab** (owner only): the same editor for the public Pinboard page.
+- The workspace now fits one screen: the menu and the content scroll separately.
+
+## This update
+- **Smoky background in the tunnel:** the homepage starts calm, the smoke flows in as you fly through the tunnel, then settles again.
+- **Four showcase cards** above "See the portfolio": edit each card's image, title, description, tag and link in the Workspace under **Site content**. Upload the images first, then press **Save text changes**.
+- **Prefer GitHub?** The starting text of every card lives in `texts.js`. Edit it on GitHub and Netlify redeploys. Anything saved in the Workspace overrides it.
+- **Login screen fixed:** it used to stay behind the workspace after signing in because of a styling bug. It now disappears when you are signed in and comes back after you sign out.
+- Run the latest `supabase.sql` again (safe to re-run) before using the Board tab or the music upload.
+
+## Updating the site later
+**Needs NO redeploy (live as soon as you save, visitors just refresh):** everything in the Workspace, namely Site content (texts, the four showcase cards and their images, email, social links), Look & sound (accent and background colours, smoky background option, site music), Portfolio, Public pinboard, and all your contacts, files, links, notes and Board.
+
+**Needs an upload (Netlify then redeploys by itself in about a minute):** a new version of the website files. On GitHub open your repo -> **Add file -> Upload files**, drag in only the files that changed (same names replace the old ones) -> **Commit changes**. Wait for **Published** in Netlify Deploys, then hard refresh (Ctrl+Shift+R). If you did not connect GitHub, drag the whole unzipped folder onto Netlify -> Deploys instead. Run `supabase.sql` again only when a new one comes with an update.

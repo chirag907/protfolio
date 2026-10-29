@@ -6,21 +6,23 @@
 <title>Portfolio – Chirag Lakhera</title>
 <meta name="description" content="Selected projects by Chirag Lakhera.">
 <meta name="theme-color" content="#0e1013">
-<link rel="icon" href="icon.svg">
+<link rel="icon" type="image/png" href="favicon-32.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400..900&family=Manrope:wght@400..700&family=Pinyon+Script&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400..900&family=Manrope:wght@400..700&family=Pinyon+Script&display=block" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<script src="theme.js"></script>
 </head>
-<body>
+<body class="plain">
 <header class="top"><a class="wm" href="index.html">Chirag Lakhera</a>
-<nav aria-label="Main"><a href="index.html">Home</a><a href="workspace.html" target="_blank" rel="noopener">Workspace</a><a href="index.html#contact">Contact</a></nav></header>
+<nav aria-label="Main"><a href="portfolio.html">Portfolio</a><a href="pinboard.html">Pinboard</a><a href="workspace.html" target="_blank" rel="noopener">Workspace</a><a href="index.html#contact">Contact</a><button class="snd" type="button" aria-pressed="false">Sound off</button></nav></header>
 <main>
 <section class="pf-hero"><h1 id="pf-head">Portfolio</h1><p id="pf-bio" class="pf-bio"></p></section>
 <section id="pf" class="pf-grid" aria-live="polite"></section>
 </main>
-<footer><p class="mark" aria-hidden="true">Chirag Lakhera</p><p>© <span id="year">2026</span> Chirag Lakhera</p></footer>
+<div id="pv" hidden><div class="pv-box" role="dialog" aria-modal="true" aria-labelledby="pv-t"><button class="pv-x" id="pv-x" type="button">Close</button><img id="pv-img" alt="" hidden><div class="pv-info"><h2 id="pv-t"></h2><p id="pv-s"></p><div id="pv-tags" class="chips"></div><a id="pv-a" class="bt" target="_blank" rel="noopener noreferrer" hidden>Visit project</a></div></div></div>
+<footer class="gf"><span class="mark" aria-hidden="true">Chirag Lakhera</span><nav aria-label="Footer"><a href="portfolio.html">Portfolio</a><a href="pinboard.html">Pinboard</a><a href="workspace.html" target="_blank" rel="noopener">Workspace</a></nav><span class="cp">© <span id="year">2026</span> Chirag Lakhera</span></footer>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script defer src="config.js"></script>
-<script defer src="portfolio.js"></script>
+<script defer src="audio.js"></script><script defer src="portfolio.js"></script>
 </body>
 </html>
